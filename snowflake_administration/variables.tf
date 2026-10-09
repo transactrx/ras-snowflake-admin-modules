@@ -194,7 +194,8 @@ variable "transactRxUsers" {
     roles                          = list(string)
     rsa_public_key                 = optional(string)
     isCreateUserDatabase           = optional(bool, false)
-    isPasswordEnabled              = optional(bool)
+    // No password option: users authenticate by SSO (people) or key pair / WIF (services). Passwords are not
+    // supported by this module.
   }))
   default = {}
 }
@@ -411,11 +412,6 @@ variable "OWNER_ROLE_COMPUTE_POOLS" {
   default = "SYSADMIN"
 }
 
-variable "DEFAULT_PASSWORD" {
-  type    = string
-  default = "ChangeMe123!"
-}
-
 variable "USER_ROLE_PREFIX" {
   type    = string
   default = "UR_"
@@ -441,16 +437,8 @@ variable "STREAMLITS_ROOT" {
   You will need to add a connection to your snowsql config file located here.
     .snowsql/config
 
-  You will need to add a connection with a name that matches the value of this variable.
-
-    [connections.my_connection]
-    accountname = ABC123
-    username = SnowFlakeUserName
-    password = Password123123
-    region = us-east-1
-    dbname = CPE_DEV
-    schemaname = DATA
-    warehouse = COMPUTE_WH
+  You will need to add a connection with a name that matches the value of this variable
+  ([connections.<name>] in that file). See the SnowSQL documentation for its fields.
   **/
 variable "SNOW_SQL_CONNECTION_NAME" {
   type    = string

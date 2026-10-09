@@ -69,5 +69,5 @@ module "snowflake_administration" {
 
   execute         = true
   transactRxUsers = local.transactRxUsers
-  DEFAULT_EMAIL   = "rasdataservices@redsailtechnologies.com"
+  DEFAULT_EMAIL   = "example@example.com"
 }

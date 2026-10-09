@@ -2,10 +2,11 @@
 
 The account-level administration module used by `SnowflakeWHAdministration`, published here so the split `ras-snowflake-admin-*` projects share one versioned copy. It creates users, service accounts, account roles, database roles, warehouses, compute pools, resource monitors, integrations, alerts, procedures and Streamlits from plain HCL maps.
 
-This is a copy of `SnowflakeWHAdministration/snowflake_administration` at commit `c501207`, with two changes so a project can pass only the maps it owns:
+This started as a copy of `SnowflakeWHAdministration/snowflake_administration` at commit `c501207`, with these deliberate differences:
 
 - `transactRxStreamlits` defaults to `{}` (it was the only map without a default).
 - `transactRxUsers[*].isCreateUserDatabase` defaults to `false`. It was `optional(bool)` but used directly as a condition, so leaving it out failed.
+- **No password support.** `isPasswordEnabled` and `DEFAULT_PASSWORD` are gone; users authenticate by SSO, key pair or WIF. The module never sets a password, and `ignore_changes` keeps it from removing one a user already has (break-glass).
 
 `SnowflakeWHAdministration` still uses its own local copy. Until it switches to this source, keep the two in step.
 
@@ -66,7 +67,6 @@ Every map you leave out defaults to `{}`, so nothing else is created. A full wor
 | `ADMIN_ACCOUNTS` | list(string) | `[]` | Not used by any resource; kept so existing callers still work |
 | `DEFAULT_EMAIL` | string | `""` | Fallback e-mail for users with an empty `email` |
 | `DEFAULT_ROLE` | string | `READ_ONLY` | Role granted to personal `UR_` roles |
-| `DEFAULT_PASSWORD` | string | `ChangeMe123!` | Initial password when `isPasswordEnabled = true` |
 | `USER_ROLE_PREFIX` | string | `UR_` | Prefix for personal roles |
 | `USER_DATABASE_PREFIX` | string | `DB_` | Prefix for personal databases |
 | `OWNER_ROLE_WAREHOUSES` | string | `SYSADMIN` | Warehouse owner |

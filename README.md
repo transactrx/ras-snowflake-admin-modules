@@ -25,4 +25,4 @@ module "snowflake_administration" {
 
 ## Relationship to SnowflakeWHAdministration-Modules
 
-`SnowflakeWHAdministration-Modules` keeps the `tagging` and `task` modules used by the `ras-datawarehouse-*` repos. It was not renamed, so those repos are unaffected. `snowflake_administration` here started as a copy of `SnowflakeWHAdministration/snowflake_administration` at commit `c501207`. `SnowflakeWHAdministration` still uses its own copy; keep the two in step until it switches to this source.
+`SnowflakeWHAdministration-Modules` keeps the `tagging` and `task` modules used by the `ras-datawarehouse-*` repos. It was not renamed, so those repos are unaffected. `snowflake_administration` here started as a copy of `SnowflakeWHAdministration/snowflake_administration` at commit `c501207`. It deliberately differs from that copy (no password support, optional inputs); see its README. `SnowflakeWHAdministration` still uses its own copy.

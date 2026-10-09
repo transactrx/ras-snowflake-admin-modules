@@ -20,11 +20,11 @@ resource "snowflake_user" "user" {
   default_warehouse              = each.value.default_warehouse
   default_secondary_roles_option = coalesce(each.value.default_secondary_roles_option, "ALL")
   default_role                   = each.value.isCreateUserDatabase ? "${upper("${var.USER_ROLE_PREFIX}${replace("${each.value.first_name}${each.value.last_name}${each.value.index}", "/[^a-zA-Z0-9]/", "")}")}" : each.value.default_role
-  password                       = lookup(each.value, "isPasswordEnabled", false) == true ? var.DEFAULT_PASSWORD : null
-  must_change_password           = lookup(each.value, "isPasswordEnabled", false)
   rsa_public_key                 = lookup(each.value, "rsa_public_key", null)
   lifecycle {
     create_before_destroy = true
+    // Passwords are not supported: this module never sets one. Ignoring both attributes also means it never
+    // removes one, so moving an existing user that has a hand-set password (break-glass) plans no change to it.
     ignore_changes = [
       password,
       must_change_password,

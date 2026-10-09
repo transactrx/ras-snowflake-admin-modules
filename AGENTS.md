@@ -12,5 +12,6 @@ Shared Terraform modules for the `ras-snowflake-admin-*` projects. See `README.m
 - **Never change a resource address casually.** Renaming a resource or its `for_each` key makes every caller plan a destroy and recreate. Use a `moved` block and a MAJOR bump.
 - **Least privilege per resource:** pick the smallest provider alias that can do the job. Resources on the default provider (account roles, alerts) run as whatever role the caller's default provider uses.
 - **Test through the example.** `snowflake_administration/examples/users-only` must `terraform validate` and pass a mocked `terraform test` before a tag is cut.
-- **`snowflake_administration` came from `SnowflakeWHAdministration/snowflake_administration`.** Until `SnowflakeWHAdministration` uses this repo, port any change to its local copy too.
+- **`snowflake_administration` came from `SnowflakeWHAdministration/snowflake_administration`** and deliberately differs from it (see the module README). Never add those differences back. When `SnowflakeWHAdministration` switches to this repo, it must first drop what this module no longer supports (`isPasswordEnabled` on its test users).
+- **No passwords.** Users authenticate by SSO, key pair or WIF. Never add a password input.
 - **The repo stays public.** CI fetches modules without a token. Never commit secrets or account-specific values.
