@@ -10,9 +10,16 @@ This started as a copy of `SnowflakeWHAdministration/snowflake_administration` a
 
 `SnowflakeWHAdministration` still uses its own local copy. Until it switches to this source, keep the two in step.
 
+**`v1.1.0` is in step with `SnowflakeWHAdministration` `Production` at `e2be81f` (2026-11-09).** It brings over every change SWA made to its module since `c501207`, keeping the differences above:
+
+- `futureOwnership` on schemas in `transactRxRoles` and `transactRxDatabaseRoles`: the role or database role owns FUTURE objects of those types in the schema (SWA #1119).
+- `network_policy` on `transactRxUsers`: the user's own network policy.
+- JavaScript procedures no longer use `create_before_destroy` (a same-name replacement always failed with `002002`), and alerts no longer `depends_on` them.
+- The `PHI_RESTRICTED` marker role SWA added and then removed is not included.
+
 ## Versions
 
-Callers pin a tag, never `main`: `?ref=snowflake_administration-v<MAJOR>.<MINOR>.<PATCH>`. Bump MAJOR when a change can alter what an existing caller plans (a renamed input, a changed default); MINOR for a new optional input or resource type; PATCH for fixes that plan no differently. `v1.0.0` is the first tag to cut.
+Callers pin a tag, never `main`: `?ref=snowflake_administration-v<MAJOR>.<MINOR>.<PATCH>`. Bump MAJOR when a change can alter what an existing caller plans (a renamed input, a changed default); MINOR for a new optional input or resource type; PATCH for fixes that plan no differently. `v1.0.0` is the first tag; `v1.1.0` (MINOR: new optional inputs and resources, nothing an existing caller plans differently) follows it.
 
 ## Usage
 
@@ -43,6 +50,7 @@ Every map you leave out defaults to `{}`, so nothing else is created. A full wor
 - **All five providers must be passed:** default, `accountadmin`, `securityadmin`, `sysadmin` and `useradmin`, even if the project uses only some of them. Terraform requires every alias the module declares.
 - **Roles in a user's `roles` list must already exist.** Role grants come from each user's own `roles` list, not from `transactRxRoles`. A project that passes only users grants existing roles and creates none.
 - **`isCreateUserDatabase = true` also creates a personal `UR_<name>` role and `DB_<name>` database** for that user, and makes the role the user's default.
+- **A user's `network_policy` is managed on the user object.** Leaving it out (`null`) means the user follows the account-level policy, and an apply removes any user-level policy the user already has. When taking over an existing user, set `network_policy` to the policy they hold today.
 - **Provider version:** `snowflakedb/snowflake ~> 2.21.0`.
 
 ## Inputs

@@ -2,7 +2,7 @@
 
 Shared Terraform modules for the `ras-snowflake-admin-*` projects: security, access, workloads, users and platform. These projects were split out of `SnowflakeWHAdministration`; the plan is in `SnowflakeWHAdministration/docs/refactor_plan/`.
 
-**Status: local only, not a GitHub repo yet.**
+**Status:** `snowflake_administration-v1.0.0` and `-v1.1.0`; no project consumes the module yet.
 
 ## Modules
 

@@ -13,7 +13,9 @@ resource "snowflake_procedure_javascript" "procedures" {
   execute_as           = each.value.execute_as
   procedure_definition = each.value.procedure_definition
 
-  lifecycle {
-    create_before_destroy = true
-  }
+  # No create_before_destroy: a changed procedure_definition forces replacement, and a procedure's replacement has
+  # the same name, so creating it before dropping the old one always fails with 002002 "already exists" (Production
+  # apply 38909816402, 2026-10-16). Destroy-then-create leaves the procedure missing for a few seconds of the apply.
+  # Nothing may depend_on these procedures from a resource that has create_before_destroy: Terraform would force it
+  # back on here (resources_alert.tf).
 }
