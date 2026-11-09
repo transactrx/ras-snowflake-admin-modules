@@ -304,3 +304,47 @@ resource "snowflake_grant_privileges_to_database_role" "schema_object_grants_tar
     object_name = "\"${each.value.database}\".\"${each.value.schema_name}\".\"${each.value.object_name}\""
   }
 }
+
+/**
+------------------------------------------------------------------------------------------------------
+  Grant Future Ownership Of Schema Objects to Database Role (As SecurityAdmin)
+
+  Every NEW object of the listed type created in the schema - by ANY role - is owned by this database
+  role. Snowflake allows only one future-ownership grant per object type per schema, so the same type
+  cannot also be listed on an account role for the same schema. Existing objects are not touched.
+------------------------------------------------------------------------------------------------------
+**/
+locals {
+  database_role_futureOwnershipObjects = flatten([
+    for db_role_key, db_role in var.transactRxDatabaseRoles : [
+      for schema_name, schema in db_role.schemas : [
+        for object_type_plural in schema.futureOwnership : {
+          db_role_key        = db_role_key
+          database           = db_role.database
+          database_role_name = db_role.name
+          schema_name        = schema_name
+          object_type_plural = object_type_plural
+        }
+      ]
+    ]
+  ])
+}
+
+resource "snowflake_grant_ownership" "database_role_schema_object_future_ownership" {
+  provider = snowflake.securityadmin
+  depends_on = [
+    snowflake_database_role.transactRxDatabaseRoles
+  ]
+
+  for_each = var.execute ? {
+    for obj in local.database_role_futureOwnershipObjects : "${obj.db_role_key}-${obj.schema_name}-${obj.object_type_plural}" => obj
+  } : {}
+
+  database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
+  on {
+    future {
+      object_type_plural = each.value.object_type_plural
+      in_schema          = "\"${each.value.database}\".\"${each.value.schema_name}\""
+    }
+  }
+}
