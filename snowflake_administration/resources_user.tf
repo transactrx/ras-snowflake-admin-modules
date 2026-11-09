@@ -21,6 +21,7 @@ resource "snowflake_user" "user" {
   default_secondary_roles_option = coalesce(each.value.default_secondary_roles_option, "ALL")
   default_role                   = each.value.isCreateUserDatabase ? "${upper("${var.USER_ROLE_PREFIX}${replace("${each.value.first_name}${each.value.last_name}${each.value.index}", "/[^a-zA-Z0-9]/", "")}")}" : each.value.default_role
   rsa_public_key                 = lookup(each.value, "rsa_public_key", null)
+  network_policy                 = each.value.network_policy
   lifecycle {
     create_before_destroy = true
     // Passwords are not supported: this module never sets one. Ignoring both attributes also means it never

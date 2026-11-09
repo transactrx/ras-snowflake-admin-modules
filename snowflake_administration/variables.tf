@@ -54,6 +54,9 @@ variable "transactRxRoles" {
           object_type = string
           privileges  = list(string)
         }))
+        //Plural object types (e.g. "TABLES", "MODELS") whose FUTURE objects in this schema are owned
+        //by this role. Snowflake allows ONE future-ownership grant per object type per schema.
+        futureOwnership = optional(list(string), [])
       }))
     }))
   }))
@@ -196,6 +199,9 @@ variable "transactRxUsers" {
     isCreateUserDatabase           = optional(bool, false)
     // No password option: users authenticate by SSO (people) or key pair / WIF (services). Passwords are not
     // supported by this module.
+    //User-level network policy name. Replaces the account-level policy for this user only.
+    //Omit (null) to leave the user on the account-level policy.
+    network_policy = optional(string)
   }))
   default = {}
 }
@@ -382,6 +388,10 @@ variable "transactRxDatabaseRoles" {
         object_type = string
         privileges  = list(string)
       }))
+      //Plural object types whose FUTURE objects in this schema are owned by this database role.
+      //Only for passive objects - anything that runs as its owner (tasks, dynamic tables) needs
+      //account-level privileges (EXECUTE TASK, warehouse USAGE) a database role cannot hold.
+      futureOwnership = optional(list(string), [])
     }))
   }))
   default = {}
