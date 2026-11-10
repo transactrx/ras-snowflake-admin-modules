@@ -2,19 +2,19 @@
 
 Shared Terraform modules for the `ras-snowflake-admin-*` projects: security, access, workloads, users and platform. These projects were split out of `SnowflakeWHAdministration`; the plan is in `SnowflakeWHAdministration/docs/refactor_plan/`.
 
-**Status:** `snowflake_administration-v1.0.0` and `-v1.1.0`; no project consumes the module yet.
+**Status:** `snowflake_administration-v1.0.0`, `-v1.1.0` and `-v2.0.0`. The five `ras-snowflake-admin-*` projects pin `-v1.1.0` and move to `-v2.0.0` next.
 
 ## Modules
 
 | Module | What it does | Used by |
 |---|---|---|
-| [snowflake_administration](./snowflake_administration) | Account-level objects from HCL maps: users, service accounts, account and database roles, warehouses, compute pools, monitors, integrations, alerts, procedures, Streamlits. Every map is optional, so each project passes only what it owns | access, workloads, users, platform |
+| [snowflake_administration](./snowflake_administration) | Account-level objects from HCL maps: users, service accounts, account and database roles, warehouses, compute pools, monitors, integrations, alerts, procedures. Every map is optional, so each project passes only what it owns | users, access, workloads, security, platform |
 
 ## Using a module
 
 ```hcl
 module "snowflake_administration" {
-  source = "git::https://github.com/transactrx/ras-snowflake-admin-modules.git//snowflake_administration?ref=snowflake_administration-v1.0.0"
+  source = "git::https://github.com/transactrx/ras-snowflake-admin-modules.git//snowflake_administration?ref=snowflake_administration-v2.0.0"
   # ...
 }
 ```
