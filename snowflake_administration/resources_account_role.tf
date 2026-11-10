@@ -195,7 +195,7 @@ locals {
 resource "snowflake_grant_privileges_to_account_role" "integration_grants" {
   depends_on = [
     snowflake_account_role.transactRxRoles,
-    snowflake_storage_integration.storage_int
+    snowflake_storage_integration_aws.storage_int
   ]
 
   for_each = var.execute ? {
