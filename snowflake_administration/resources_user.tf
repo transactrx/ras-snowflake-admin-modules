@@ -10,7 +10,12 @@ resource "snowflake_user" "user" {
   ]
   for_each = var.execute ? var.transactRxUsers : {}
 
+  // login_name was a required input that never reached the resource. Passing it matters when a project
+  // takes over an existing user: import writes the live login name into state, and with no login_name in
+  // config the plan reads "login_name -> null" (an UNSET LOGIN_NAME). Login names compare case-insensitively
+  // (provider 2.21.0), so "jane.doe@example.com" matches live "JANE.DOE@EXAMPLE.COM".
   name                           = each.key
+  login_name                     = each.value.login_name
   comment                        = each.value.comment
   disabled                       = each.value.disabled
   display_name                   = each.value.display_name

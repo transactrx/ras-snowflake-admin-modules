@@ -159,25 +159,6 @@ variable "transactRxMonitors" {
 
 /**
 ==================================================================================================================
-  StreamLits
-==================================================================================================================
-**/
-variable "transactRxStreamlits" {
-  type = map(object({
-    name            = string
-    database        = string
-    schema          = string
-    query_warehouse = string
-    title           = string
-    main_file       = string
-    upload_files    = list(string)
-    comment         = optional(string)
-  }))
-  default = {}
-}
-
-/**
-==================================================================================================================
   Users (Key = Login Name, Value = User Object)
 ==================================================================================================================
 **/
@@ -350,17 +331,43 @@ variable "transactRxSqlProcedures" {
 ==================================================================================================================
 **/
 variable "transactRxStorageIntegrations" {
+  // AWS only (snowflake_storage_integration_aws). Keyed by the integration name, which is also its import ID.
+  // The optional attributes are Optional and NOT Computed on the provider: omitting one clears it on the live
+  // integration. When taking one over, copy every value from DESC INTEGRATION (see
+  // resources_storage_integration.tf).
   type = map(object({
     name                      = string
-    comment                   = string
+    comment                   = optional(string)
     enabled                   = bool
-    storage_provider          = string
+    storage_provider          = optional(string, "S3") // S3 | S3GOV | S3CHINA
     storage_aws_role_arn      = string
     storage_allowed_locations = list(string)
-    storage_blocked_locations = optional(list(string), [])
-    usage_roles               = optional(list(string), [])
+    storage_blocked_locations = optional(list(string))
+    // Snowflake generates it at CREATE and never rotates it; AWS trust policies match on it. Copy, never retype.
+    storage_aws_external_id = optional(string)
+    storage_aws_object_acl  = optional(string) // only "bucket-owner-full-control"
+    // "true" | "false". State the live value when taking one over, or the plan reads "false" -> "default".
+    use_privatelink_endpoint = optional(string)
+    usage_roles              = optional(list(string), [])
   }))
   default = {}
+
+  validation {
+    condition     = alltrue([for i in var.transactRxStorageIntegrations : contains(["S3", "S3GOV", "S3CHINA"], i.storage_provider)])
+    error_message = "storage_provider must be S3, S3GOV or S3CHINA: this module manages AWS storage integrations only."
+  }
+
+  validation {
+    condition     = alltrue([for i in var.transactRxStorageIntegrations : length(i.storage_allowed_locations) > 0])
+    error_message = "storage_allowed_locations must list at least one location."
+  }
+
+  validation {
+    condition = alltrue([
+      for i in var.transactRxStorageIntegrations : i.use_privatelink_endpoint == null ? true : contains(["true", "false"], i.use_privatelink_endpoint)
+    ])
+    error_message = "use_privatelink_endpoint must be \"true\", \"false\" or omitted."
+  }
 }
 
 /**
@@ -434,24 +441,5 @@ variable "USER_DATABASE_PREFIX" {
 variable "DEFAULT_ROLE" {
   type    = string
   default = "READ_ONLY"
-}
-variable "STREAMLITS_ROOT" {
-  type    = string
-  default = "./streamlits"
-}
-
-/**
-  [SnowSQL]
-  To upload files to stages you need to have snowsql installed on your local machine.
-
-  You will need to add a connection to your snowsql config file located here.
-    .snowsql/config
-
-  You will need to add a connection with a name that matches the value of this variable
-  ([connections.<name>] in that file). See the SnowSQL documentation for its fields.
-  **/
-variable "SNOW_SQL_CONNECTION_NAME" {
-  type    = string
-  default = "my_connection" //my_connection is the name used in the Terraform_apply.yml
 }
 

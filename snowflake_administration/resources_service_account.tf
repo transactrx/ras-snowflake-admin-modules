@@ -10,7 +10,10 @@ resource "snowflake_service_user" "service_account" {
   ]
   for_each = var.execute ? var.transactRxServiceAccounts : {}
 
+  // See resources_user.tf: login_name was required but never passed; without it, taking over an existing
+  // service user plans "login_name -> null". Compared case-insensitively.
   name                           = each.key
+  login_name                     = each.value.login_name
   comment                        = each.value.comment
   disabled                       = each.value.disabled
   display_name                   = each.value.display_name
