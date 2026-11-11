@@ -1,4 +1,5 @@
 resource "snowflake_alert" "alerts" {
+  provider = snowflake.accountadmin
   for_each = var.execute ? var.transactRxAlerts : {}
 
   # An alert's action can CALL a module procedure (ALERT_PMS_SHARE_METADATA) by name, as a string. There is

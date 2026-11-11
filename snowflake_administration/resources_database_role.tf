@@ -4,6 +4,7 @@ Create Database Role
 ------------------------------------------------------------------------------------------------------
 **/
 resource "snowflake_database_role" "transactRxDatabaseRoles" {
+  provider = snowflake.sysadmin
   for_each = var.execute ? var.transactRxDatabaseRoles : {}
   database = each.value.database
   name     = each.value.name
@@ -20,6 +21,7 @@ resource "snowflake_database_role" "transactRxDatabaseRoles" {
 ------------------------------------------------------------------------------------------------------
 **/
 resource "snowflake_grant_ownership" "grant_ownership_database_roles_to_useradmin" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
@@ -57,6 +59,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_database_role" "database_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
@@ -89,6 +92,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_database_role" "all_schemas_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
@@ -123,6 +127,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_database_role" "future_schemas_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
@@ -160,6 +165,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_database_role" "target_schema_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
@@ -200,6 +206,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_database_role" "schema_object_grants_all" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
@@ -243,6 +250,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_database_role" "schema_object_grants_future" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
@@ -287,6 +295,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_database_role" "schema_object_grants_target" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_database_role.transactRxDatabaseRoles
   ]
