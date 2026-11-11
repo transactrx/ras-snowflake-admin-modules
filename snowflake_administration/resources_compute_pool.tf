@@ -14,6 +14,7 @@
 ---------------------------------------------------------------
 **/
 resource "snowflake_compute_pool" "compute_pool" {
+  provider = snowflake.sysadmin
   for_each = var.execute ? var.transactRxComputePools : {}
 
   name            = each.key

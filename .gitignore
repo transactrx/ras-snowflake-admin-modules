@@ -51,3 +51,6 @@ terraform.rc
 # nothing here should ever need one - CI is keyless (WIF + GitHub OIDC).
 .env
 .env.*
+
+# Lock files that terraform init/test writes in the examples (committed by mistake in #6).
+snowflake_administration/examples/**/.terraform.lock.hcl

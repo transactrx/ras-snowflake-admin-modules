@@ -1,4 +1,5 @@
 resource "snowflake_email_notification_integration" "email_int" {
+  provider = snowflake.accountadmin
   for_each = var.execute ? var.transactRxEmailIntegrations : {}
   name     = each.key
   comment  = each.value.comment
@@ -14,6 +15,7 @@ resource "snowflake_email_notification_integration" "email_int" {
 }
 
 resource "snowflake_notification_integration" "notification_int" {
+  provider              = snowflake.accountadmin
   for_each              = var.execute ? var.transactRxNotificationIntegrations : {}
   name                  = each.key
   comment               = each.value.comment

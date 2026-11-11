@@ -22,6 +22,17 @@ This started as a copy of `SnowflakeWHAdministration/snowflake_administration` a
 - **Streamlit support is removed**: `transactRxStreamlits`, `STREAMLITS_ROOT` and `SNOW_SQL_CONNECTION_NAME`, the deprecated `snowflake_stage` and the SnowSQL `local-exec` upload. SWA manages no Streamlits, and the upload needs SnowSQL on the runner. The module no longer uses the `hashicorp/null` provider.
 - **`login_name` reaches the resource** on users and service accounts. It was a required input that was never passed, so taking over an existing user planned `login_name -> null` (an `UNSET LOGIN_NAME`). Login names compare case-insensitively.
 
+**`v2.1.0` names a provider alias on every resource**, so a project can sign in without ACCOUNTADMIN (decision 6, CI roles signed off 2026-11-11). In SWA's copy these resources use the default provider, which SWA runs as ACCOUNTADMIN; no other single role can do all of it. Here the module no longer uses the default provider:
+
+| Resources | Alias | Why |
+|---|---|---|
+| Account roles, role ownership, every privilege grant to account and database roles, database-role-to-role grants | `securityadmin` | CREATE ROLE, and MANAGE GRANTS on objects other roles own |
+| Database roles (`transactRxDatabaseRoles`) | `sysadmin` | CREATE DATABASE ROLE needs the database owner, and Snowflake authorizes CREATE by the primary role only |
+| Compute pools | `sysadmin` | SYSADMIN owns SWA's 6 pools |
+| Resource monitors, alerts, e-mail and notification integrations | `accountadmin` | ACCOUNTADMIN-owned; these go to Platform |
+
+The `sysadmin` alias creates a database role, and ownership then moves to USERADMIN. Later changes to that role (a new comment, a drop) are authorized through the session's secondary roles, so the caller's CI user needs SECURITYADMIN with `DEFAULT_SECONDARY_ROLES = ('ALL')`, Snowflake's default for users created since 2024. Check with `DESCRIBE USER <ci user>`. Creating a new compute pool also needs CREATE COMPUTE POOL granted to SYSADMIN; managing existing SYSADMIN-owned pools does not.
+
 ## Versions
 
 Callers pin a tag, never `main`: `?ref=snowflake_administration-v<MAJOR>.<MINOR>.<PATCH>`. Bump MAJOR when a change can alter what an existing caller plans (a renamed input, a changed default); MINOR for a new optional input or resource type; PATCH for fixes that plan no differently. `v1.0.0` is the first tag; `v1.1.0` (MINOR: new optional inputs and resources, nothing an existing caller plans differently) follows it. `v2.0.0` is MAJOR: a resource type changes and inputs are removed (none of which any caller used at release).
