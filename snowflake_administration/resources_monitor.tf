@@ -1,4 +1,5 @@
 resource "snowflake_resource_monitor" "monitor" {
+  provider = snowflake.accountadmin
   depends_on = [
     snowflake_warehouse.warehouse
   ]

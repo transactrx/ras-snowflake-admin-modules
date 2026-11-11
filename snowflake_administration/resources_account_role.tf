@@ -4,6 +4,7 @@ Create Custom Role (As UserAdmin)
 ------------------------------------------------------------------------------------------------------
 **/
 resource "snowflake_account_role" "transactRxRoles" {
+  provider = snowflake.securityadmin
   for_each = var.execute ? var.transactRxRoles : {}
   name     = each.key
   comment  = each.value.role_description
@@ -19,6 +20,7 @@ resource "snowflake_account_role" "transactRxRoles" {
 ------------------------------------------------------------------------------------------------------
 **/
 resource "snowflake_grant_ownership" "grant_ownership_roles_to_useradmin" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -38,6 +40,7 @@ resource "snowflake_grant_ownership" "grant_ownership_roles_to_useradmin" {
 ------------------------------------------------------------------------------------------------------
 **/
 resource "snowflake_grant_account_role" "grant_transactRxRoles_to_sysadmin" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -63,6 +66,7 @@ locals {
 }
 
 resource "snowflake_grant_account_role" "grant_role_to_other_role" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -93,6 +97,7 @@ locals {
 }
 
 resource "snowflake_grant_database_role" "grant_database_role_to_account_role" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles,
     snowflake_database_role.transactRxDatabaseRoles
@@ -126,6 +131,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "database_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -159,6 +165,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "account_privilege_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -193,6 +200,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "integration_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles,
     snowflake_storage_integration_aws.storage_int
@@ -235,6 +243,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "failover_group_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -262,6 +271,7 @@ resource "snowflake_grant_privileges_to_account_role" "failover_group_grants" {
 ------------------------------------------------------------------------------------------------------
 **/
 resource "snowflake_grant_privileges_to_account_role" "schema_grants_future" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -283,6 +293,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema_grants_future" {
 ------------------------------------------------------------------------------------------------------
 **/
 resource "snowflake_grant_privileges_to_account_role" "schema_grants_all" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -319,6 +330,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "target_schema_grants" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -360,6 +372,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema_object_grants_all" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -403,6 +416,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema_object_grants_future" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
@@ -446,6 +460,7 @@ locals {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "schema_object_grants_target" {
+  provider = snowflake.securityadmin
   depends_on = [
     snowflake_account_role.transactRxRoles
   ]
