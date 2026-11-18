@@ -85,7 +85,8 @@ resource "snowflake_grant_privileges_to_account_role" "compute_pool_grants" {
     object_type = "COMPUTE POOL"
     object_name = each.value.name_compute_pool
   }
-  privileges = each.value.privileges
+  all_privileges = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges     = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
 
   with_grant_option = false
 }

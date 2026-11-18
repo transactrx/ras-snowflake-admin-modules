@@ -98,7 +98,8 @@ resource "snowflake_grant_privileges_to_account_role" "warehouse_grants" {
     object_type = "WAREHOUSE"
     object_name = each.value.name_warehouse
   }
-  privileges = each.value.privileges
+  all_privileges = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges     = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
 
   with_grant_option = false
 }
