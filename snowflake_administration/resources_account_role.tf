@@ -145,7 +145,8 @@ resource "snowflake_grant_privileges_to_account_role" "database_grants" {
     object_type = "DATABASE"
     object_name = each.value.name_db
   }
-  privileges = each.value.privileges_db
+  all_privileges = contains(each.value.privileges_db, "ALL PRIVILEGES") ? true : null
+  privileges     = contains(each.value.privileges_db, "ALL PRIVILEGES") ? null : each.value.privileges_db
 }
 
 /**
@@ -254,7 +255,8 @@ resource "snowflake_grant_privileges_to_account_role" "failover_group_grants" {
   } : {}
 
   account_role_name = each.value.role_name
-  privileges        = each.value.privileges
+  all_privileges    = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges        = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
 
   on_account_object {
     object_type = "FAILOVER GROUP"
@@ -280,7 +282,8 @@ resource "snowflake_grant_privileges_to_account_role" "schema_grants_future" {
     if length(role.schema_privileges_future) > 0
   } : {}
   account_role_name = each.value.name_role
-  privileges        = each.value.schema_privileges_future
+  all_privileges    = contains(each.value.schema_privileges_future, "ALL PRIVILEGES") ? true : null
+  privileges        = contains(each.value.schema_privileges_future, "ALL PRIVILEGES") ? null : each.value.schema_privileges_future
   on_schema {
     future_schemas_in_database = each.value.name_db
   }
@@ -302,7 +305,8 @@ resource "snowflake_grant_privileges_to_account_role" "schema_grants_all" {
     if length(role.schema_privileges_all) > 0
   } : {}
   account_role_name = each.value.name_role
-  privileges        = each.value.schema_privileges_all
+  all_privileges    = contains(each.value.schema_privileges_all, "ALL PRIVILEGES") ? true : null
+  privileges        = contains(each.value.schema_privileges_all, "ALL PRIVILEGES") ? null : each.value.schema_privileges_all
   on_schema {
     all_schemas_in_database = each.value.name_db
   }
@@ -343,7 +347,8 @@ resource "snowflake_grant_privileges_to_account_role" "target_schema_grants" {
   on_schema {
     schema_name = "\"${each.value.name_db}\".\"${each.value.name_schema}\""
   }
-  privileges = each.value.privileges_schema
+  all_privileges = contains(each.value.privileges_schema, "ALL PRIVILEGES") ? true : null
+  privileges     = contains(each.value.privileges_schema, "ALL PRIVILEGES") ? null : each.value.privileges_schema
 }
 
 
@@ -380,7 +385,8 @@ resource "snowflake_grant_privileges_to_account_role" "schema_object_grants_all"
     for schemaObjAll in local.allSchemaObjects : "${schemaObjAll.name_role}-${schemaObjAll.name_db}-${schemaObjAll.name_schema}-${schemaObjAll.name_sObjPlural}" => schemaObjAll
     if length(schemaObjAll.privileges) > 0
   } : {}
-  privileges        = each.value.privileges
+  all_privileges    = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges        = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
   account_role_name = each.value.name_role
   on_schema_object {
     all {
@@ -425,7 +431,8 @@ resource "snowflake_grant_privileges_to_account_role" "schema_object_grants_futu
     if length(schemaObjFuture.privileges) > 0
   } : {}
 
-  privileges        = each.value.privileges
+  all_privileges    = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges        = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
   account_role_name = each.value.name_role
   on_schema_object {
     future {
@@ -468,7 +475,8 @@ resource "snowflake_grant_privileges_to_account_role" "schema_object_grants_targ
     for schemaObjTarget in local.targetSchemaObjects : "${schemaObjTarget.name_role}-${schemaObjTarget.name_db}-${schemaObjTarget.name_schema}-${schemaObjTarget.name_object}" => schemaObjTarget
     if length(schemaObjTarget.privileges) > 0
   } : {}
-  privileges        = each.value.privileges
+  all_privileges    = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges        = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
   account_role_name = each.value.name_role
   on_schema_object {
     object_type = each.value.object_type

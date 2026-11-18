@@ -70,7 +70,8 @@ resource "snowflake_grant_privileges_to_database_role" "database_grants" {
   } : {}
 
   database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
-  privileges         = each.value.database_privileges
+  all_privileges     = contains(each.value.database_privileges, "ALL PRIVILEGES") ? true : null
+  privileges         = contains(each.value.database_privileges, "ALL PRIVILEGES") ? null : each.value.database_privileges
 
   on_database = each.value.database
 }
@@ -103,7 +104,8 @@ resource "snowflake_grant_privileges_to_database_role" "all_schemas_grants" {
   } : {}
 
   database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
-  privileges         = each.value.schema_privileges_all
+  all_privileges     = contains(each.value.schema_privileges_all, "ALL PRIVILEGES") ? true : null
+  privileges         = contains(each.value.schema_privileges_all, "ALL PRIVILEGES") ? null : each.value.schema_privileges_all
 
   on_schema {
     all_schemas_in_database = each.value.database
@@ -138,7 +140,8 @@ resource "snowflake_grant_privileges_to_database_role" "future_schemas_grants" {
   } : {}
 
   database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
-  privileges         = each.value.schema_privileges_future
+  all_privileges     = contains(each.value.schema_privileges_future, "ALL PRIVILEGES") ? true : null
+  privileges         = contains(each.value.schema_privileges_future, "ALL PRIVILEGES") ? null : each.value.schema_privileges_future
 
   on_schema {
     future_schemas_in_database = each.value.database
@@ -176,7 +179,8 @@ resource "snowflake_grant_privileges_to_database_role" "target_schema_grants" {
   } : {}
 
   database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
-  privileges         = each.value.privileges_schema
+  all_privileges     = contains(each.value.privileges_schema, "ALL PRIVILEGES") ? true : null
+  privileges         = contains(each.value.privileges_schema, "ALL PRIVILEGES") ? null : each.value.privileges_schema
 
   on_schema {
     schema_name = "\"${each.value.database}\".\"${each.value.schema_name}\""
@@ -217,7 +221,8 @@ resource "snowflake_grant_privileges_to_database_role" "schema_object_grants_all
   } : {}
 
   database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
-  privileges         = each.value.privileges
+  all_privileges     = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges         = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
 
   on_schema_object {
     all {
@@ -261,7 +266,8 @@ resource "snowflake_grant_privileges_to_database_role" "schema_object_grants_fut
   } : {}
 
   database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
-  privileges         = each.value.privileges
+  all_privileges     = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges         = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
 
   on_schema_object {
     future {
@@ -306,7 +312,8 @@ resource "snowflake_grant_privileges_to_database_role" "schema_object_grants_tar
   } : {}
 
   database_role_name = "\"${each.value.database}\".\"${each.value.database_role_name}\""
-  privileges         = each.value.privileges
+  all_privileges     = contains(each.value.privileges, "ALL PRIVILEGES") ? true : null
+  privileges         = contains(each.value.privileges, "ALL PRIVILEGES") ? null : each.value.privileges
 
   on_schema_object {
     object_type = each.value.object_type
