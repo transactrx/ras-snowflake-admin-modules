@@ -30,6 +30,12 @@ resource "snowflake_warehouse" "warehouse" {
   warehouse_type      = each.value.warehouse_type
   auto_suspend        = each.value.auto_suspend
 
+  // v2.2.0. null (omitted) keeps the provider's "default" sentinel, so callers that don't set them plan as before.
+  auto_resume                         = each.value.auto_resume == null ? null : tostring(each.value.auto_resume)
+  enable_query_acceleration           = each.value.enable_query_acceleration == null ? null : tostring(each.value.enable_query_acceleration)
+  query_acceleration_max_scale_factor = each.value.query_acceleration_max_scale_factor
+  generation                          = each.value.generation
+
   // null unless a monitor in transactrx_monitors.tf claims this warehouse.
   resource_monitor = lookup(local.monitorByWarehouse, each.key, null)
 

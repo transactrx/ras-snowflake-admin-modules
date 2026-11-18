@@ -83,6 +83,15 @@ variable "transactRxWarehouses" {
     //Omit to leave the warehouse at the Snowflake default (unmanaged by Terraform).
     auto_suspend = optional(number)
 
+    //v2.2.0: state these when taking over a warehouse another project created without them. Omitted (null), the
+    //provider keeps its "default" sentinel, exactly as before v2.2.0. An import reads the live values, so leaving
+    //them out of a takeover plans an UNSET of each - and UNSET GENERATION can move a Gen1 warehouse to Gen2 in
+    //regions where Gen2 is now the default (BCR 2026_03). Copy the live values from SHOW WAREHOUSES.
+    auto_resume                         = optional(bool)
+    enable_query_acceleration           = optional(bool)
+    query_acceleration_max_scale_factor = optional(number)
+    generation                          = optional(string) // "1" or "2"; standard warehouses only
+
     //OPTIONS TO CONSIDER SUPPORTING
     # auto_resume = bool
     # enable_query_acceleration = bool
